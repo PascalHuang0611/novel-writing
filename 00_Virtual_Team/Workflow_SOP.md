@@ -32,8 +32,12 @@
 為了確保在新的對話視窗中依然能無縫接軌，AI 必須主動使用讀取檔案的工具，完整載入以下設定檔：
 * **世界觀與基礎：** `Story_Bible.md`, `01_Settings/world_rules.md`
 * **角色深度設定：** `02_Characters/main_characters.md`, `02_Characters/side_characters.md`
-* **章節大綱與字數：** `03_Outlines/chapter_plan.md` (或指定的章節大綱檔)
-* **Agent 寫作風格：** 讀取 `00_Virtual_Team/Agent_LeadWriter.md` 等相關虛擬員工設定。
+* **整體劇情與章節：** `03_Outlines/main_plot.md` (主線大綱), `03_Outlines/chapter_plan.md` (當前章節大綱)
+* **虛擬團隊 (Agents) 核心指令：** 必須完整載入以下四個角色的行為準則：
+  - `00_Virtual_Team/Agent_LeadWriter.md` (首席主筆)
+  - `00_Virtual_Team/Agent_LoreChecker.md` (邏輯監督員)
+  - `00_Virtual_Team/Agent_CharacterPsychologist.md` (心理架構師)
+  - `00_Virtual_Team/Agent_OutlineArchitect.md` (大綱規劃師)
 
 **【Step 1-4：執行循環與輸出】**
 1. **確認目標：** 確認已充分了解該章節的劇情節拍與字數要求。
