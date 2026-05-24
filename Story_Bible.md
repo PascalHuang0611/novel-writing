@@ -27,9 +27,8 @@
 為了確保 25 萬字連載不吃書，所有具體設定已精準分發，**AI 寫作與審核時必須依照以下導航調用資料**：
 
 ### 1. 世界觀與底層邏輯 (`01_Settings/`)
-* [**核心美學憲法**](./01_Settings/aesthetic_guidelines.md) `aesthetic_guidelines.md`：(最高權限) 規定本作獨有的「戰損、奴隸烙印與解離感」美學。
 * [**三大勢力與末日社會**](./01_Settings/factions_and_society.md) `factions_and_society.md`：紀錄廢土上的人類陣營、據點運作方式與資源爭奪。
-* [**蟲族生態與生物學**](./01_Settings/bug_biology.md) `bug_biology.md`：紀錄火流星潛伏期、孢子感染、活體苗床等怪物設定。
+* [**蟲族生態與生物學**](./01_Settings/bug_biology.md) `bug_biology.md`：紀錄火流星潛伏期、實體暴兵、活體苗床等怪物設定。
 
 ### 2. 角色檔案庫 (`02_Characters/`)
 * [**林語晴專屬檔案**](./02_Characters/lin_yuqing_profile.md) `lin_yuqing_profile.md`：女主角的深度人設、成癮性體質、心理弱點與背景故事。
