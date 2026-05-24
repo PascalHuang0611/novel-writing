@@ -27,6 +27,7 @@
 為了確保 25 萬字連載不吃書，所有具體設定已精準分發，**AI 寫作與審核時必須依照以下導航調用資料**：
 
 ### 1. 世界觀與底層邏輯 (`01_Settings/`)
+* [**世界觀規則**](./01_Settings/world_rules.md) `world_rules.md`：記錄架空地名系統、末日事件時間線、廢土文化禁忌與生態平衡。
 * [**三大勢力與末日社會**](./01_Settings/factions_and_society.md) `factions_and_society.md`：紀錄廢土上的人類陣營、據點運作方式與資源爭奪。
 * [**蟲族生態與生物學**](./01_Settings/bug_biology.md) `bug_biology.md`：紀錄火流星潛伏期、實體暴兵、活體苗床等怪物設定。
 
@@ -38,5 +39,8 @@
 * [**主線與章節地圖**](./03_Outlines/main_plot.md) `main_plot.md`：記錄三幕劇結構與主角的終極結局。
 * [**動態記憶進度**](./03_Outlines/story_progress.md) `story_progress.md`：(防吃書機制) 記錄每一章節完成後的最新世界局勢與角色狀態。
 
-### 4. 虛擬創作團隊 (`00_Virtual_Team/`)
+### 4. 正文稿件庫 (`04_Manuscript/`)
+* 存放每一章節的正式定稿 `chapter_[X].md` 與撰寫中的分段 Beat 暫存檔 `chapter_[X]-[Y].md`。
+
+### 5. 虛擬創作團隊 (`00_Virtual_Team/`)
 * [**運作 SOP**](./00_Virtual_Team/Workflow_SOP.md) `Workflow_SOP.md`：記錄五位專屬 AI Agent 的分工流程與寫作規範。
