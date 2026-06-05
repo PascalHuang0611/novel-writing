@@ -52,17 +52,22 @@
     }
 
     .sidebar-nav {
-      padding: 1rem 0 !important;
+      padding: 0.5rem 0 !important;
+    }
+
+    .sidebar-nav > ul > li {
+      margin-bottom: 0 !important;
     }
 
     .sidebar-nav li a {
       color: var(--text-secondary) !important;
-      font-size: 0.9rem !important;
-      padding: 6px 15px !important;
+      font-size: 0.88rem !important;
+      padding: 4px 12px !important;
       transition: all 0.2s ease !important;
       border-radius: 6px !important;
-      margin: 2px 8px !important;
+      margin: 1px 6px !important;
       display: block !important;
+      line-height: 1.5 !important;
     }
 
     .sidebar-nav li a:hover {
@@ -78,28 +83,16 @@
 
     .sidebar-nav li > p {
       color: var(--text-muted) !important;
-      font-size: 0.75rem !important;
-      text-transform: uppercase !important;
-      letter-spacing: 1.5px !important;
-      padding: 20px 15px 6px !important;
-      margin: 0 8px !important;
+      font-size: 0.78rem !important;
+      letter-spacing: 0.5px !important;
+      padding: 10px 12px 4px !important;
+      margin: 0 6px !important;
       font-weight: 600 !important;
-    }
-
-    .app-name-link {
-      font-family: var(--base-font-family) !important;
-      font-weight: 900 !important;
-      font-size: 1.2rem !important;
-      color: var(--accent-warm) !important;
-      padding: 1rem 1.5rem !important;
-      display: block !important;
+      cursor: pointer !important;
+      line-height: 1.4 !important;
     }
 
     /* ===== SIDEBAR COLLAPSE ===== */
-    .sidebar-nav li > p {
-      cursor: pointer !important;
-    }
-
     .sidebar-nav .folder {
       cursor: pointer !important;
     }
