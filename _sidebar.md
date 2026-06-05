@@ -40,11 +40,6 @@
   - [純血領主 (蟲族)](02_Characters/pureblood_lords.md)
   - [角色關係圖譜](02_Characters/角色關係圖譜.md)
 
-- 📋 劇情大綱
-
-  - [主線劇情與章節地圖](03_Outlines/main_plot.md)
-  - [動態進度記錄](03_Outlines/story_progress.md)
-
 - 📝 正文
 
   - [第一章：火流星之夜](04_Manuscript/chapter_01.md)
