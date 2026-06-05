@@ -459,10 +459,19 @@
       plugins: [
         function(hook) {
           hook.doneEach(function() {
-            // Auto-enhance character gallery divs
             document.querySelectorAll('.character-gallery img').forEach(img => {
               img.style.borderRadius = '12px 12px 0 0';
             });
+            // Version badge
+            if (!document.getElementById('version-badge')) {
+              var badge = document.createElement('div');
+              badge.id = 'version-badge';
+              badge.textContent = 'v0.1.0';
+              badge.style.cssText = 'position:fixed;bottom:16px;right:16px;background:#161b22;color:#8b949e;border:1px solid #30363d;border-radius:6px;padding:4px 10px;font-family:Inter,sans-serif;font-size:0.75rem;z-index:99;opacity:0.7;transition:opacity 0.2s;cursor:default;';
+              badge.onmouseenter = function() { this.style.opacity = '1'; };
+              badge.onmouseleave = function() { this.style.opacity = '0.7'; };
+              document.body.appendChild(badge);
+            }
           });
         }
       ]
