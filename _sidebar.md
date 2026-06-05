@@ -13,10 +13,10 @@
 - 👥 角色檔案 — 主角
 
   - [林語晴 ♀ 女主角](02_Characters/林語晴.md)
-  - [黃培昇 ♂ 男主角](02_Characters/黃培昇.md)
 
 - 👥 角色檔案 — 配角
 
+  - [黃培昇 ♂](02_Characters/黃培昇.md)
   - [劉彥廷 ♂](02_Characters/劉彥廷.md)
   - [陳柏翰 ♂](02_Characters/陳柏翰.md)
   - [吳若瑜 ♀](02_Characters/吳若瑜.md)

@@ -22,14 +22,7 @@
   <a href="#/02_Characters/林語晴">
     <img src="02_Characters/images/林語晴.png" alt="林語晴">
     <div class="char-name">林語晴</div>
-    <div class="char-role">♀ 女主角 · 19歲</div>
-  </a>
-</div>
-<div class="char-card">
-  <a href="#/02_Characters/黃培昇">
-    <img src="02_Characters/images/黃培昇.png" alt="黃培昇">
-    <div class="char-name">黃培昇</div>
-    <div class="char-role">♂ 男主角 · 32歲</div>
+    <div class="char-role">♀ 女主角 · 16歲</div>
   </a>
 </div>
 </div>
@@ -38,10 +31,17 @@
 
 <div class="character-gallery">
 <div class="char-card">
+  <a href="#/02_Characters/黃培昇">
+    <img src="02_Characters/images/黃培昇.png" alt="黃培昇">
+    <div class="char-name">黃培昇</div>
+    <div class="char-role">♂ AI工程師 · 32歲</div>
+  </a>
+</div>
+<div class="char-card">
   <a href="#/02_Characters/劉彥廷">
     <img src="02_Characters/images/劉彥廷.png" alt="劉彥廷">
     <div class="char-name">劉彥廷</div>
-    <div class="char-role">♂ 前學生會長 · 19歲</div>
+    <div class="char-role">♂ 學生會副會長 · 17歲</div>
   </a>
 </div>
 <div class="char-card">
@@ -55,7 +55,7 @@
   <a href="#/02_Characters/吳若瑜">
     <img src="02_Characters/images/吳若瑜.png" alt="吳若瑜">
     <div class="char-name">吳若瑜</div>
-    <div class="char-role">♀ 語晴閨蜜 · 19歲</div>
+    <div class="char-role">♀ 語晴閨蜜 · 16歲</div>
   </a>
 </div>
 <div class="char-card">
@@ -76,14 +76,14 @@
   <a href="#/02_Characters/張雅婷">
     <img src="02_Characters/images/張雅婷.png" alt="張雅婷">
     <div class="char-name">張雅婷</div>
-    <div class="char-role">♀ 太陽型開心果 · 19歲</div>
+    <div class="char-role">♀ 太陽型開心果 · 16歲</div>
   </a>
 </div>
 <div class="char-card">
   <a href="#/02_Characters/方語彤">
     <img src="02_Characters/images/方語彤.png" alt="方語彤">
     <div class="char-name">方語彤</div>
-    <div class="char-role">♀ 工具人格 · 19歲</div>
+    <div class="char-role">♀ 工具人格 · 16歲</div>
   </a>
 </div>
 <div class="char-card">
@@ -97,21 +97,21 @@
   <a href="#/02_Characters/白若雪">
     <img src="02_Characters/images/白若雪.png" alt="白若雪">
     <div class="char-name">白若雪</div>
-    <div class="char-role">♀ 祈禱少女 · 17歲</div>
+    <div class="char-role">♀ 祈禱少女 · 15歲</div>
   </a>
 </div>
 <div class="char-card">
   <a href="#/02_Characters/鄭雅文">
     <img src="02_Characters/images/鄭雅文.png" alt="鄭雅文">
     <div class="char-name">鄭雅文</div>
-    <div class="char-role">♀ 精算者 · 19歲</div>
+    <div class="char-role">♀ 精算者 · 25歲</div>
   </a>
 </div>
 <div class="char-card">
   <a href="#/02_Characters/趙曉萍">
     <img src="02_Characters/images/趙曉萍.png" alt="趙曉萍">
     <div class="char-name">趙曉萍</div>
-    <div class="char-role">♀ 鄰家女孩 · 17歲</div>
+    <div class="char-role">♀ 鄰家女孩 · 28歲</div>
   </a>
 </div>
 <div class="char-card">
@@ -151,15 +151,6 @@
 | [**世界觀規則**](01_Settings/world_rules.md) | 架空地名、末日時間線、廢土文化禁忌與生態平衡 |
 | [**勢力與社會**](01_Settings/factions_and_society.md) | 血狼軍閥、淨化教派、拾荒者聯盟、伊甸園 |
 | [**蟲族生態**](01_Settings/bug_biology.md) | 火流星潛伏期、實體暴兵、活體苗床、純血領主 |
-
----
-
-## 📋 劇情進度
-
-| 項目 | 連結 |
-|---|---|
-| 主線劇情與章節地圖 | [main_plot.md](03_Outlines/main_plot.md) |
-| 動態進度記錄 | [story_progress.md](03_Outlines/story_progress.md) |
 
 ---
 
