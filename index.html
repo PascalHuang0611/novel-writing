@@ -30,24 +30,72 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <style>
-    /* ===== ROOT VARIABLES ===== */
+    /* ===== DOCSIFY-DARKLIGHT-THEME OVERRIDES ===== */
     :root {
       --base-font-family: 'Noto Serif TC', 'Georgia', serif;
       --ui-font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      
-      /* Dark theme colors */
-      --bg-color: #0d1117;
-      --bg-secondary: #161b22;
-      --bg-card: #1c2129;
-      --text-primary: #e6edf3;
-      --text-secondary: #8b949e;
-      --text-muted: #6e7681;
-      --accent: #58a6ff;
-      --accent-warm: #f0883e;
-      --accent-red: #ff6b6b;
-      --border-color: #30363d;
-      --sidebar-bg: #0d1117;
-      --sidebar-border: #21262d;
+
+      /* ---- Dark Mode (default) ---- */
+      --docsifytabs-border-color: #30363d;
+      --docsifytabs-tab-highlight-color: #58a6ff;
+
+      --theme-color: #58a6ff;
+
+      /* Dark theme tokens */
+      --dark-bg-color: #0d1117;
+      --dark-bg-secondary: #161b22;
+      --dark-bg-card: #1c2129;
+      --dark-text-primary: #e6edf3;
+      --dark-text-secondary: #8b949e;
+      --dark-text-muted: #6e7681;
+      --dark-accent: #58a6ff;
+      --dark-accent-warm: #f0883e;
+      --dark-border-color: #30363d;
+      --dark-sidebar-bg: #0d1117;
+      --dark-sidebar-border: #21262d;
+
+      /* Light theme tokens */
+      --light-bg-color: #ffffff;
+      --light-bg-secondary: #f6f8fa;
+      --light-bg-card: #f0f2f5;
+      --light-text-primary: #1f2328;
+      --light-text-secondary: #656d76;
+      --light-text-muted: #8b949e;
+      --light-accent: #0969da;
+      --light-accent-warm: #cf6a1a;
+      --light-border-color: #d0d7de;
+      --light-sidebar-bg: #f6f8fa;
+      --light-sidebar-border: #d8dee4;
+    }
+
+    /* ===== DARK MODE MAPPING ===== */
+    [data-theme="dark"] {
+      --bg-color: var(--dark-bg-color);
+      --bg-secondary: var(--dark-bg-secondary);
+      --bg-card: var(--dark-bg-card);
+      --text-primary: var(--dark-text-primary);
+      --text-secondary: var(--dark-text-secondary);
+      --text-muted: var(--dark-text-muted);
+      --accent: var(--dark-accent);
+      --accent-warm: var(--dark-accent-warm);
+      --border-color: var(--dark-border-color);
+      --sidebar-bg: var(--dark-sidebar-bg);
+      --sidebar-border: var(--dark-sidebar-border);
+    }
+
+    /* ===== LIGHT MODE MAPPING ===== */
+    [data-theme="light"] {
+      --bg-color: var(--light-bg-color);
+      --bg-secondary: var(--light-bg-secondary);
+      --bg-card: var(--light-bg-card);
+      --text-primary: var(--light-text-primary);
+      --text-secondary: var(--light-text-secondary);
+      --text-muted: var(--light-text-muted);
+      --accent: var(--light-accent);
+      --accent-warm: var(--light-accent-warm);
+      --border-color: var(--light-border-color);
+      --sidebar-bg: var(--light-sidebar-bg);
+      --sidebar-border: var(--light-sidebar-border);
     }
 
     /* ===== GLOBAL ===== */
