@@ -95,6 +95,30 @@
       display: block !important;
     }
 
+    /* ===== SIDEBAR COLLAPSE ===== */
+    .sidebar-nav li > p {
+      cursor: pointer !important;
+    }
+
+    .sidebar-nav .folder {
+      cursor: pointer !important;
+    }
+
+    .sidebar-nav li.collapse .app-sub-sidebar,
+    .sidebar-nav li.collapse > ul {
+      display: none;
+    }
+
+    .sidebar-nav li.open > ul {
+      display: block;
+    }
+
+    .sidebar-nav li > a .arrow,
+    .sidebar-nav li > p .arrow {
+      border-color: var(--text-muted) !important;
+      transition: transform 0.2s ease !important;
+    }
+
     /* ===== MAIN CONTENT ===== */
     .markdown-section {
       max-width: 820px !important;
@@ -415,6 +439,7 @@
       auto2top: true,
       coverpage: '_coverpage.md',
       onlyCover: false,
+      sidebarDisplayLevel: 0,
       
       search: {
         placeholder: '🔍 搜尋角色、設定、關鍵字...',
@@ -452,5 +477,6 @@
   <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/zoom-image.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
 </body>
 </html>
