@@ -333,30 +333,72 @@
     /* ===== COVER PAGE ===== */
     section.cover {
       background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1a1e2e 100%) !important;
+      color: #e6edf3 !important;
     }
 
     section.cover .cover-main {
-      color: var(--text-primary) !important;
+      color: #e6edf3 !important;
     }
 
     section.cover h1 {
-      font-family: var(--base-font-family) !important;
+      font-family: 'Noto Serif TC', serif !important;
       font-weight: 900 !important;
-      color: var(--accent-warm) !important;
+      color: #f0883e !important;
+      font-size: 2.8rem !important;
+      border: none !important;
+    }
+
+    section.cover blockquote {
+      border-left: none !important;
+      background: none !important;
     }
 
     section.cover blockquote p {
-      color: var(--text-secondary) !important;
+      color: #8b949e !important;
+      font-size: 1.2rem !important;
     }
 
-    section.cover a {
-      border-color: var(--accent) !important;
-      color: var(--accent) !important;
+    /* Primary button (first link) */
+    section.cover .cover-main > p:last-child a:first-child {
+      display: inline-block !important;
+      padding: 12px 36px !important;
+      border-radius: 8px !important;
+      background: #58a6ff !important;
+      color: #0d1117 !important;
+      border: 2px solid #58a6ff !important;
+      font-weight: 600 !important;
+      font-size: 1.1rem !important;
+      text-decoration: none !important;
+      margin-right: 12px !important;
+      transition: all 0.3s ease !important;
     }
 
-    section.cover a:hover {
-      background: var(--accent) !important;
-      color: var(--bg-color) !important;
+    section.cover .cover-main > p:last-child a:first-child:hover {
+      background: #79b8ff !important;
+      border-color: #79b8ff !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 16px rgba(88, 166, 255, 0.3) !important;
+    }
+
+    /* Secondary button (second link) */
+    section.cover .cover-main > p:last-child a:last-child {
+      display: inline-block !important;
+      padding: 12px 36px !important;
+      border-radius: 8px !important;
+      background: transparent !important;
+      color: #f0883e !important;
+      border: 2px solid #f0883e !important;
+      font-weight: 600 !important;
+      font-size: 1.1rem !important;
+      text-decoration: none !important;
+      transition: all 0.3s ease !important;
+    }
+
+    section.cover .cover-main > p:last-child a:last-child:hover {
+      background: #f0883e !important;
+      color: #0d1117 !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 16px rgba(240, 136, 62, 0.3) !important;
     }
   </style>
 </head>
@@ -372,6 +414,7 @@
       subMaxLevel: 3,
       auto2top: true,
       coverpage: '_coverpage.md',
+      onlyCover: false,
       
       search: {
         placeholder: '🔍 搜尋角色、設定、關鍵字...',
