@@ -32,8 +32,9 @@
 * [**蟲族生態與生物學**](01_Settings/bug_biology.md) `bug_biology.md`：紀錄火流星潛伏期、實體暴兵、活體苗床等怪物設定。
 
 ### 2. 角色檔案庫 (`02_Characters/`)
-* [**林語晴專屬檔案**](02_Characters/lin_yuqing_profile.md) `lin_yuqing_profile.md`：女主角的深度人設、成癮性體質、心理弱點與背景故事。
-* *(配角檔案未來將依劇情進展陸續建立於此目錄)*
+* [**林語晴**](02_Characters/林語晴.md)：主角。16 歲女高中生。
+* [**角色關係圖譜**](02_Characters/角色關係圖譜.md)：以林語晴為核心的全角色關係網。
+* 已建立：16 人（含主角 + 黃培昇），詳見各角色獨立設定檔。
 
 ### 3. 劇情大綱與進度管理 (`03_Outlines/`)
 * [**主線與章節地圖**](03_Outlines/main_plot.md) `main_plot.md`：記錄三幕劇結構與主角的終極結局。

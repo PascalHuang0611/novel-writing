@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>角色關係圖譜 — 林語晴</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: rgba(255,255,255,0.04);
+            --text-primary: #e8e6e3;
+            --text-secondary: #8a8a9a;
+            --accent-pink: #ff4d6d;
+            --accent-blue: #4cc9f0;
+            --accent-purple: #7b2ff7;
+            --accent-gold: #f0c040;
+            --accent-green: #2dd4bf;
+            --accent-red: #ef4444;
+            --accent-orange: #f97316;
+            --glow-pink: rgba(255,77,109,0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        #header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 16px 24px;
+            background: linear-gradient(180deg, rgba(10,10,15,0.95) 0%, rgba(10,10,15,0) 100%);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        #header h1 {
+            font-size: 20px;
+            font-weight: 500;
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #header .subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        #legend {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 100;
+            background: var(--bg-secondary);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 16px;
+            backdrop-filter: blur(20px);
+            min-width: 200px;
+        }
+
+        #legend h3 {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            font-weight: 400;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .legend-line {
+            width: 24px;
+            height: 2px;
+            flex-shrink: 0;
+            border-radius: 1px;
+        }
+
+        #info-panel {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            z-index: 100;
+            background: var(--bg-secondary);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(20px);
+            width: 280px;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        #info-panel.visible {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: all;
+        }
+
+        #info-panel h2 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        #info-panel .role {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        #info-panel .detail {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        #info-panel .chapter {
+            display: inline-block;
+            background: rgba(255,255,255,0.06);
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 11px;
+            margin-top: 8px;
+            color: var(--accent-blue);
+        }
+
+        #info-panel .status {
+            display: inline-block;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 11px;
+            margin-top: 4px;
+            margin-left: 4px;
+        }
+
+        .status-dead { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+        .status-broken { background: rgba(249,115,22,0.15); color: var(--accent-orange); }
+        .status-alive { background: rgba(45,212,191,0.15); color: var(--accent-green); }
+
+        svg { width: 100%; height: 100vh; }
+
+        .link {
+            stroke-opacity: 0.4;
+            transition: stroke-opacity 0.3s;
+        }
+
+        .link-label {
+            font-size: 10px;
+            fill: var(--text-secondary);
+            text-anchor: middle;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .node-circle {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .node-circle:hover {
+            filter: brightness(1.3);
+        }
+
+        .node-label {
+            font-family: 'Noto Sans TC', sans-serif;
+            font-size: 12px;
+            fill: var(--text-primary);
+            text-anchor: middle;
+            pointer-events: none;
+            font-weight: 400;
+        }
+
+        .node-glow {
+            pointer-events: none;
+        }
+
+        .dimmed .link { stroke-opacity: 0.05 !important; }
+        .dimmed .node-circle { opacity: 0.15; }
+        .dimmed .node-label { opacity: 0.15; }
+        .dimmed .link-label { opacity: 0; }
+
+        .dimmed .highlighted-link { stroke-opacity: 0.8 !important; }
+        .dimmed .highlighted-node .node-circle { opacity: 1 !important; }
+        .dimmed .highlighted-node .node-label { opacity: 1 !important; }
+
+        #controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 8px;
+        }
+
+        .ctrl-btn {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: 'Noto Sans TC', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .ctrl-btn:hover {
+            background: rgba(255,255,255,0.08);
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+
+<div id="header">
+    <h1>角色關係圖譜</h1>
+    <span class="subtitle">以林語晴為核心 · 點擊角色查看資訊</span>
+</div>
+
+<div id="legend">
+    <h3>節點類型</h3>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent-pink)"></div> 主角</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent-blue)"></div> 保護者</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent-red)"></div> 加害者</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent-gold)"></div> 教導者</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent-orange)"></div> 碎裂者</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent-green)"></div> 情愫對象</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent-purple)"></div> 其他</div>
+    <h3 style="margin-top:12px">連線類型</h3>
+    <div class="legend-item"><div class="legend-line" style="background:var(--accent-blue)"></div> 保護</div>
+    <div class="legend-item"><div class="legend-line" style="background:var(--accent-red)"></div> 加害</div>
+    <div class="legend-item"><div class="legend-line" style="background:var(--accent-green)"></div> 情感</div>
+    <div class="legend-item"><div class="legend-line" style="background:var(--accent-purple)"></div> 其他關係</div>
+</div>
+
+<div id="info-panel">
+    <h2 id="info-name"></h2>
+    <div class="role" id="info-role"></div>
+    <div class="detail" id="info-detail"></div>
+    <span class="chapter" id="info-chapter"></span>
+    <span class="status" id="info-status"></span>
+</div>
+
+<div id="controls">
+    <button class="ctrl-btn" onclick="resetView()">重置視圖</button>
+</div>
+
+<svg id="graph"></svg>
+
+<script>
+const characters = [
+    { id: "林語晴", type: "protagonist", role: "主角", chapter: "全書", status: "alive",
+      detail: "16 歲女高中生。故事核心。從傻白甜到覺醒的成長弧線。", radius: 32 },
+
+    { id: "許芷涵", type: "protector", role: "好友 · 保護者", chapter: "6-10", status: "dead",
+      detail: "末日前的死黨。末日後重逢結伴。主動犧牲代替語晴。", radius: 20 },
+    { id: "蕭亦晴", type: "protector", role: "同班 · 保護者", chapter: "7-9", status: "dead",
+      detail: "三人結伴同行。先於芷涵被暴徒挑中致死。", radius: 20 },
+    { id: "陳柏翰", type: "protector", role: "暗戀者 · 犧牲者", chapter: "15-16", status: "dead",
+      detail: "末日前暗戀語晴。用生命保護語晴後致命重傷。語晴為減輕痛苦與他發生關係。", radius: 20 },
+    { id: "黃培昇", type: "love", role: "獨行者 · 情愫對象", chapter: "31-36", status: "alive",
+      detail: "在語晴身上看見前女友影子。告知獻祭內幕。逃出後介入救援。結伴同行。語晴產生情愫。", radius: 22 },
+
+    { id: "黃志偉", type: "abuser", role: "加害者 · 偽裝者", chapter: "4-5", status: "dead",
+      detail: "語晴遇到的第一個男人。偽裝好人→侵犯。被蟲族殺死。", radius: 16 },
+    { id: "劉彥廷", type: "abuser", role: "偽善加害者", chapter: "14", status: "dead",
+      detail: "同校學生會副會長。偽善型侵犯。被蟲族殺死。", radius: 16 },
+
+    { id: "趙曉萍", type: "mentor", role: "教導者", chapter: "13", status: "dead",
+      detail: "教語晴生存的實用心態。被玩弄致死。", radius: 16 },
+    { id: "鄭雅文", type: "mentor", role: "教導者", chapter: "24", status: "dead",
+      detail: "語晴從她學到生存技巧。權力更迭後被玩弄致死。", radius: 16 },
+
+    { id: "葉沛妤", type: "other", role: "學妹 · 被保護者", chapter: "12", status: "dead",
+      detail: "語晴想保護她但失敗。語晴第一次經歷「保護失敗」。", radius: 15 },
+    { id: "周心妍", type: "other", role: "同校 · 同路人", chapter: "19", status: "dead",
+      detail: "轉賣途中重逢。被分別賣給不同買家。", radius: 15 },
+    { id: "張雅婷", type: "other", role: "同校 · 旁觀", chapter: "23", status: "dead",
+      detail: "在聚落中被分配做頭目私人用品。被轉讓後致死。", radius: 15 },
+    { id: "吳若瑜", type: "other", role: "同校 · 託付者", chapter: "28", status: "dead",
+      detail: "將筆記本交給語晴。筆記本成為全書的記憶載體。", radius: 17 },
+
+    { id: "方語彤", type: "broken", role: "同校 · 碎裂者", chapter: "20", status: "broken",
+      detail: "交易市場上看到。已被轉手多次，碎裂。", radius: 15 },
+    { id: "白若雪", type: "broken", role: "聖女 · 碎裂者", chapter: "25", status: "broken",
+      detail: "被教主利用為神聖象徵。語晴旁觀。", radius: 15 },
+
+    { id: "楊詩涵", type: "other", role: "照顧者 · 替代犧牲者", chapter: "31-34", status: "dead",
+      detail: "在難民營中照顧語晴。語晴逃出後成為替代品，被祭司搾取致死。", radius: 18 }
+];
+
+const links = [
+    { source: "許芷涵", target: "林語晴", label: "保護·犧牲", type: "protect" },
+    { source: "蕭亦晴", target: "林語晴", label: "保護·犧牲", type: "protect" },
+    { source: "陳柏翰", target: "林語晴", label: "暗戀·臨終性愛", type: "emotion" },
+    { source: "黃培昇", target: "林語晴", label: "救援·情愫", type: "emotion" },
+    { source: "黃志偉", target: "林語晴", label: "侵犯", type: "abuse" },
+    { source: "劉彥廷", target: "林語晴", label: "偽善侵犯", type: "abuse" },
+    { source: "趙曉萍", target: "林語晴", label: "教導", type: "other" },
+    { source: "鄭雅文", target: "林語晴", label: "教導", type: "other" },
+    { source: "林語晴", target: "葉沛妤", label: "保護失敗", type: "protect" },
+    { source: "周心妍", target: "林語晴", label: "同路·分離", type: "other" },
+    { source: "張雅婷", target: "林語晴", label: "旁觀", type: "other" },
+    { source: "吳若瑜", target: "林語晴", label: "筆記本託付", type: "emotion" },
+    { source: "方語彤", target: "林語晴", label: "旁觀·碎裂", type: "other" },
+    { source: "白若雪", target: "林語晴", label: "旁觀·碎裂", type: "other" },
+    { source: "楊詩涵", target: "林語晴", label: "照顧·替代犧牲", type: "emotion" },
+    { source: "許芷涵", target: "蕭亦晴", label: "保護默契", type: "other" }
+];
+
+const typeColors = {
+    protagonist: "#ff4d6d",
+    protector: "#4cc9f0",
+    abuser: "#ef4444",
+    mentor: "#f0c040",
+    broken: "#f97316",
+    love: "#2dd4bf",
+    other: "#7b2ff7"
+};
+
+const linkColors = {
+    protect: "#4cc9f0",
+    abuse: "#ef4444",
+    emotion: "#2dd4bf",
+    other: "#7b2ff7"
+};
+
+const svg = document.getElementById('graph');
+const width = window.innerWidth;
+const height = window.innerHeight;
+svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+// Create defs for gradients and glows
+const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+
+// Glow filter
+const filter = document.createElementNS("http://www.w3.org/2000/svg", "filter");
+filter.setAttribute("id", "glow");
+filter.setAttribute("x", "-50%"); filter.setAttribute("y", "-50%");
+filter.setAttribute("width", "200%"); filter.setAttribute("height", "200%");
+const blur = document.createElementNS("http://www.w3.org/2000/svg", "feGaussianBlur");
+blur.setAttribute("stdDeviation", "4"); blur.setAttribute("result", "blur");
+const merge = document.createElementNS("http://www.w3.org/2000/svg", "feMerge");
+const mn1 = document.createElementNS("http://www.w3.org/2000/svg", "feMergeNode");
+mn1.setAttribute("in", "blur");
+const mn2 = document.createElementNS("http://www.w3.org/2000/svg", "feMergeNode");
+mn2.setAttribute("in", "SourceGraphic");
+merge.appendChild(mn1); merge.appendChild(mn2);
+filter.appendChild(blur); filter.appendChild(merge);
+defs.appendChild(filter);
+svg.appendChild(defs);
+
+// Build node map
+const nodeMap = {};
+characters.forEach(c => nodeMap[c.id] = c);
+
+// Simple force simulation
+const nodes = characters.map(c => ({
+    ...c,
+    x: width/2 + (Math.random()-0.5)*300,
+    y: height/2 + (Math.random()-0.5)*300,
+    vx: 0, vy: 0
+}));
+
+// Center protagonist
+const protag = nodes.find(n => n.id === "林語晴");
+protag.x = width/2;
+protag.y = height/2;
+
+const simLinks = links.map(l => ({
+    ...l,
+    sourceNode: nodes.find(n => n.id === l.source),
+    targetNode: nodes.find(n => n.id === l.target)
+}));
+
+// Simple force simulation
+function simulate() {
+    const centerX = width/2, centerY = height/2;
+
+    for (let iter = 0; iter < 300; iter++) {
+        // Repulsion between all nodes
+        for (let i = 0; i < nodes.length; i++) {
+            for (let j = i+1; j < nodes.length; j++) {
+                let dx = nodes[j].x - nodes[i].x;
+                let dy = nodes[j].y - nodes[i].y;
+                let dist = Math.sqrt(dx*dx + dy*dy) || 1;
+                let force = 8000 / (dist * dist);
+                let fx = dx/dist * force;
+                let fy = dy/dist * force;
+                nodes[i].vx -= fx; nodes[i].vy -= fy;
+                nodes[j].vx += fx; nodes[j].vy += fy;
+            }
+        }
+
+        // Attraction along links
+        simLinks.forEach(l => {
+            let dx = l.targetNode.x - l.sourceNode.x;
+            let dy = l.targetNode.y - l.sourceNode.y;
+            let dist = Math.sqrt(dx*dx + dy*dy) || 1;
+            let idealDist = 180;
+            let force = (dist - idealDist) * 0.005;
+            let fx = dx/dist * force;
+            let fy = dy/dist * force;
+            l.sourceNode.vx += fx; l.sourceNode.vy += fy;
+            l.targetNode.vx -= fx; l.targetNode.vy -= fy;
+        });
+
+        // Center gravity
+        nodes.forEach(n => {
+            let dx = centerX - n.x;
+            let dy = centerY - n.y;
+            n.vx += dx * 0.001;
+            n.vy += dy * 0.001;
+        });
+
+        // Apply velocity
+        nodes.forEach(n => {
+            if (n.id === "林語晴") {
+                n.x = centerX; n.y = centerY;
+                n.vx = 0; n.vy = 0;
+                return;
+            }
+            n.vx *= 0.85; n.vy *= 0.85;
+            n.x += n.vx; n.y += n.vy;
+            // Keep in bounds
+            n.x = Math.max(60, Math.min(width-60, n.x));
+            n.y = Math.max(60, Math.min(height-60, n.y));
+        });
+    }
+}
+
+simulate();
+
+// Render
+const svgNS = "http://www.w3.org/2000/svg";
+
+// Links group
+const linksG = document.createElementNS(svgNS, "g");
+linksG.setAttribute("class", "links-group");
+svg.appendChild(linksG);
+
+// Link labels group
+const linkLabelsG = document.createElementNS(svgNS, "g");
+svg.appendChild(linkLabelsG);
+
+// Nodes group
+const nodesG = document.createElementNS(svgNS, "g");
+nodesG.setAttribute("class", "nodes-group");
+svg.appendChild(nodesG);
+
+// Draw links
+simLinks.forEach(l => {
+    const line = document.createElementNS(svgNS, "line");
+    line.setAttribute("x1", l.sourceNode.x);
+    line.setAttribute("y1", l.sourceNode.y);
+    line.setAttribute("x2", l.targetNode.x);
+    line.setAttribute("y2", l.targetNode.y);
+    line.setAttribute("stroke", linkColors[l.type]);
+    line.setAttribute("stroke-width", l.type === "abuse" ? "2" : "1.5");
+    line.setAttribute("class", "link");
+    line.dataset.source = l.source;
+    line.dataset.target = l.target;
+    if (l.type === "abuse") {
+        line.setAttribute("stroke-dasharray", "6,4");
+    }
+    linksG.appendChild(line);
+
+    // Link label
+    const text = document.createElementNS(svgNS, "text");
+    const mx = (l.sourceNode.x + l.targetNode.x) / 2;
+    const my = (l.sourceNode.y + l.targetNode.y) / 2;
+    text.setAttribute("x", mx);
+    text.setAttribute("y", my - 6);
+    text.setAttribute("class", "link-label");
+    text.dataset.source = l.source;
+    text.dataset.target = l.target;
+    text.textContent = l.label;
+    linkLabelsG.appendChild(text);
+});
+
+// Draw nodes
+nodes.forEach(n => {
+    const g = document.createElementNS(svgNS, "g");
+    g.setAttribute("class", "node");
+    g.dataset.id = n.id;
+
+    // Glow circle for protagonist
+    if (n.type === "protagonist") {
+        const glow = document.createElementNS(svgNS, "circle");
+        glow.setAttribute("cx", n.x);
+        glow.setAttribute("cy", n.y);
+        glow.setAttribute("r", n.radius + 12);
+        glow.setAttribute("fill", "none");
+        glow.setAttribute("stroke", typeColors[n.type]);
+        glow.setAttribute("stroke-width", "1");
+        glow.setAttribute("opacity", "0.3");
+        glow.setAttribute("class", "node-glow");
+        g.appendChild(glow);
+
+        // Pulse animation
+        const anim = document.createElementNS(svgNS, "animate");
+        anim.setAttribute("attributeName", "r");
+        anim.setAttribute("values", `${n.radius+8};${n.radius+16};${n.radius+8}`);
+        anim.setAttribute("dur", "3s");
+        anim.setAttribute("repeatCount", "indefinite");
+        glow.appendChild(anim);
+
+        const anim2 = document.createElementNS(svgNS, "animate");
+        anim2.setAttribute("attributeName", "opacity");
+        anim2.setAttribute("values", "0.3;0.1;0.3");
+        anim2.setAttribute("dur", "3s");
+        anim2.setAttribute("repeatCount", "indefinite");
+        glow.appendChild(anim2);
+    }
+
+    const circle = document.createElementNS(svgNS, "circle");
+    circle.setAttribute("cx", n.x);
+    circle.setAttribute("cy", n.y);
+    circle.setAttribute("r", n.radius);
+    circle.setAttribute("fill", typeColors[n.type]);
+    circle.setAttribute("opacity", n.type === "protagonist" ? "1" : "0.85");
+    circle.setAttribute("class", "node-circle");
+    if (n.type === "protagonist") {
+        circle.setAttribute("filter", "url(#glow)");
+    }
+    g.appendChild(circle);
+
+    // Status ring
+    if (n.status === "dead") {
+        const ring = document.createElementNS(svgNS, "circle");
+        ring.setAttribute("cx", n.x);
+        ring.setAttribute("cy", n.y);
+        ring.setAttribute("r", n.radius + 3);
+        ring.setAttribute("fill", "none");
+        ring.setAttribute("stroke", "rgba(239,68,68,0.4)");
+        ring.setAttribute("stroke-width", "1");
+        ring.setAttribute("stroke-dasharray", "3,3");
+        g.appendChild(ring);
+    }
+
+    const label = document.createElementNS(svgNS, "text");
+    label.setAttribute("x", n.x);
+    label.setAttribute("y", n.y + n.radius + 16);
+    label.setAttribute("class", "node-label");
+    label.textContent = n.id;
+    if (n.type === "protagonist") {
+        label.setAttribute("font-weight", "700");
+        label.setAttribute("font-size", "14px");
+    }
+    g.appendChild(label);
+
+    // Click handler
+    g.addEventListener("click", () => showInfo(n));
+    g.addEventListener("mouseenter", () => highlightConnections(n.id));
+    g.addEventListener("mouseleave", () => clearHighlight());
+
+    nodesG.appendChild(g);
+});
+
+function showInfo(n) {
+    const panel = document.getElementById('info-panel');
+    document.getElementById('info-name').textContent = n.id;
+    document.getElementById('info-name').style.color = typeColors[n.type];
+    document.getElementById('info-role').textContent = n.role;
+    document.getElementById('info-detail').textContent = n.detail;
+    document.getElementById('info-chapter').textContent = `第 ${n.chapter} 章`;
+
+    const statusEl = document.getElementById('info-status');
+    if (n.status === 'dead') {
+        statusEl.textContent = '死亡';
+        statusEl.className = 'status status-dead';
+    } else if (n.status === 'broken') {
+        statusEl.textContent = '碎裂';
+        statusEl.className = 'status status-broken';
+    } else {
+        statusEl.textContent = '存活';
+        statusEl.className = 'status status-alive';
+    }
+
+    panel.classList.add('visible');
+}
+
+function highlightConnections(nodeId) {
+    const connected = new Set([nodeId]);
+    simLinks.forEach(l => {
+        if (l.source === nodeId) connected.add(l.target);
+        if (l.target === nodeId) connected.add(l.source);
+    });
+
+    svg.classList.add('dimmed');
+
+    document.querySelectorAll('.node').forEach(g => {
+        if (connected.has(g.dataset.id)) {
+            g.classList.add('highlighted-node');
+        }
+    });
+
+    document.querySelectorAll('.link').forEach(line => {
+        if (line.dataset.source === nodeId || line.dataset.target === nodeId) {
+            line.classList.add('highlighted-link');
+        }
+    });
+}
+
+function clearHighlight() {
+    svg.classList.remove('dimmed');
+    document.querySelectorAll('.highlighted-node').forEach(el => el.classList.remove('highlighted-node'));
+    document.querySelectorAll('.highlighted-link').forEach(el => el.classList.remove('highlighted-link'));
+}
+
+function resetView() {
+    document.getElementById('info-panel').classList.remove('visible');
+    clearHighlight();
+}
+
+// Close panel on background click
+svg.addEventListener('click', (e) => {
+    if (e.target === svg || e.target.tagName === 'line') {
+        document.getElementById('info-panel').classList.remove('visible');
+    }
+});
+</script>
+</body>
+</html>
