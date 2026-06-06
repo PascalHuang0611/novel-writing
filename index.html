@@ -463,6 +463,35 @@
       }
     }
 
+    /* ===== ILLUSTRATION STYLE TOGGLE ===== */
+    .illust-wrap {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .illust-toggle {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      background: rgba(13, 17, 23, 0.75);
+      color: var(--text-muted, #8b949e);
+      border: 1px solid var(--border-color, #30363d);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-family: var(--ui-font-family);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(4px);
+      z-index: 10;
+    }
+
+    .illust-toggle:hover {
+      background: rgba(13, 17, 23, 0.9);
+      color: var(--text-primary, #e6edf3);
+    }
+
     /* ===== COVER PAGE ===== */
     section.cover {
       background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1a1e2e 100%) !important;
@@ -568,6 +597,41 @@
             document.title = 'PascalDream — 創作工坊';
             document.querySelectorAll('.character-gallery img').forEach(img => {
               img.style.borderRadius = '12px 12px 0 0';
+            });
+
+            // Illustration style toggle
+            document.querySelectorAll('.markdown-section img').forEach(function(img) {
+              var src = img.getAttribute('src') || '';
+              // Match chapter illustration (e.g. chapter_0.png but not chapter_0_anime.png)
+              var match = src.match(/images\/(chapter_\d+)\.png/);
+              if (!match) return;
+              var baseName = match[1];
+              var realisticSrc = src;
+              var animeSrc = src.replace(baseName + '.png', baseName + '_anime.png');
+              // Skip if already wrapped
+              if (img.parentElement && img.parentElement.classList.contains('illust-wrap')) return;
+              // Wrap image
+              var wrap = document.createElement('div');
+              wrap.className = 'illust-wrap';
+              img.parentNode.insertBefore(wrap, img);
+              wrap.appendChild(img);
+              // Add toggle button
+              var btn = document.createElement('button');
+              btn.className = 'illust-toggle';
+              btn.textContent = '🎨 動畫版';
+              btn.setAttribute('data-style', 'realistic');
+              btn.onclick = function() {
+                if (this.getAttribute('data-style') === 'realistic') {
+                  img.src = animeSrc;
+                  this.textContent = '📷 寫實版';
+                  this.setAttribute('data-style', 'anime');
+                } else {
+                  img.src = realisticSrc;
+                  this.textContent = '🎨 動畫版';
+                  this.setAttribute('data-style', 'realistic');
+                }
+              };
+              wrap.appendChild(btn);
             });
             // Version badge
             if (!document.getElementById('version-badge')) {
