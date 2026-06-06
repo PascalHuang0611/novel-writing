@@ -403,7 +403,6 @@
       color: var(--accent) !important;
       cursor: pointer;
       border-bottom: 1px dotted rgba(88, 166, 255, 0.4);
-      position: relative;
       transition: color 0.2s ease, border-color 0.2s ease;
     }
 
@@ -413,63 +412,43 @@
     }
 
     .char-tooltip {
-      display: none;
       position: absolute;
-      bottom: calc(100% + 10px);
-      left: 50%;
-      transform: translateX(-50%);
       width: 220px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
+      background: var(--bg-card, #1c2129);
+      border: 1px solid var(--border-color, #30363d);
       border-radius: 12px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-      z-index: 1000;
+      z-index: 10000;
       overflow: hidden;
-      pointer-events: none;
       opacity: 0;
-      transition: opacity 0.25s ease;
-    }
-
-    .char-ref:hover .char-tooltip {
-      display: block;
-      opacity: 1;
-      pointer-events: auto;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
     }
 
     .char-tooltip img {
-      width: 100% !important;
-      aspect-ratio: 3/4 !important;
-      object-fit: cover !important;
-      border-radius: 0 !important;
-      box-shadow: none !important;
-      margin: 0 !important;
-      display: block !important;
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      display: block;
+      border-radius: 0;
+      box-shadow: none;
+      margin: 0;
     }
 
     .char-tooltip .tooltip-name {
       font-family: var(--base-font-family);
       font-weight: 700;
       font-size: 0.95rem;
-      color: var(--text-primary);
+      color: var(--text-primary, #e6edf3);
       padding: 8px 12px 2px;
     }
 
     .char-tooltip .tooltip-desc {
       font-family: var(--ui-font-family);
       font-size: 0.78rem;
-      color: var(--text-muted);
+      color: var(--text-muted, #6e7681);
       padding: 2px 12px 10px;
       line-height: 1.4;
-    }
-
-    .char-tooltip::after {
-      content: '';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 6px solid transparent;
-      border-top-color: var(--border-color);
     }
 
     /* ===== RESPONSIVE ===== */
@@ -640,32 +619,91 @@
             return entry;
           }
 
-          hook.afterEach(function(html) {
+          // Shared floating tooltip element
+          var tooltip = document.createElement('div');
+          tooltip.className = 'char-tooltip';
+          tooltip.style.display = 'none';
+          document.body.appendChild(tooltip);
+
+          function showTooltip(el, data, displayName) {
+            tooltip.innerHTML = '<img src="' + data.img + '" alt="' + displayName + '">'
+              + '<div class="tooltip-name">' + displayName + '</div>'
+              + '<div class="tooltip-desc">' + data.desc + '</div>';
+            tooltip.style.display = 'block';
+            // Position above the element
+            var rect = el.getBoundingClientRect();
+            var tw = 220;
+            var left = rect.left + rect.width / 2 - tw / 2;
+            if (left < 8) left = 8;
+            if (left + tw > window.innerWidth - 8) left = window.innerWidth - 8 - tw;
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = (rect.top + window.scrollY - tooltip.offsetHeight - 10) + 'px';
+            tooltip.style.opacity = '1';
+          }
+
+          function hideTooltip() {
+            tooltip.style.opacity = '0';
+            setTimeout(function() { tooltip.style.display = 'none'; }, 200);
+          }
+
+          hook.doneEach(function() {
             // Only apply to manuscript pages
             var path = window.location.hash || '';
-            if (path.indexOf('04_Manuscript') === -1) return html;
+            if (path.indexOf('04_Manuscript') === -1) return;
 
-            // Build sorted names (longest first to avoid partial matches)
+            var content = document.querySelector('.markdown-section');
+            if (!content) return;
+
+            // Build sorted names (longest first)
             var names = Object.keys(CHARACTER_DB).sort(function(a, b) { return b.length - a.length; });
             var pattern = new RegExp('(' + names.map(function(n) { return n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|') + ')', 'g');
 
-            // Replace in text nodes only (skip inside HTML tags and existing tooltips)
-            html = html.replace(/(<[^>]*>)|([^<]+)/g, function(match, tag, text) {
-              if (tag) return tag;
-              return text.replace(pattern, function(charName) {
+            // Walk text nodes
+            var walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
+            var textNodes = [];
+            while (walker.nextNode()) {
+              if (walker.currentNode.parentElement && 
+                  walker.currentNode.parentElement.closest('.char-ref, .char-tooltip, script, style, a')) continue;
+              if (pattern.test(walker.currentNode.textContent)) {
+                textNodes.push(walker.currentNode);
+              }
+              pattern.lastIndex = 0;
+            }
+
+            textNodes.forEach(function(node) {
+              var text = node.textContent;
+              var frag = document.createDocumentFragment();
+              var lastIndex = 0;
+              pattern.lastIndex = 0;
+              var match;
+              while ((match = pattern.exec(text)) !== null) {
+                // Add text before match
+                if (match.index > lastIndex) {
+                  frag.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+                }
+                // Create char-ref span
+                var charName = match[1];
                 var data = resolveChar(charName);
-                if (!data) return charName;
-                var displayName = CHARACTER_DB[charName].alias || charName;
-                return '<span class="char-ref" onclick="window.location.hash=\'' + data.link + '\'">'
-                  + charName
-                  + '<span class="char-tooltip">'
-                  + '<img src="' + data.img + '" alt="' + displayName + '">'
-                  + '<div class="tooltip-name">' + displayName + '</div>'
-                  + '<div class="tooltip-desc">' + data.desc + '</div>'
-                  + '</span></span>';
-              });
+                if (data) {
+                  var displayName = CHARACTER_DB[charName].alias || charName;
+                  var span = document.createElement('span');
+                  span.className = 'char-ref';
+                  span.textContent = charName;
+                  span.setAttribute('data-char', displayName);
+                  span.onclick = function() { window.location.hash = data.link; };
+                  span.onmouseenter = function() { showTooltip(this, resolveChar(this.getAttribute('data-char')), this.getAttribute('data-char')); };
+                  span.onmouseleave = hideTooltip;
+                  frag.appendChild(span);
+                } else {
+                  frag.appendChild(document.createTextNode(charName));
+                }
+                lastIndex = pattern.lastIndex;
+              }
+              if (lastIndex < text.length) {
+                frag.appendChild(document.createTextNode(text.slice(lastIndex)));
+              }
+              node.parentNode.replaceChild(frag, node);
             });
-            return html;
           });
         }
       ]
