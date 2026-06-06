@@ -630,14 +630,22 @@
               + '<div class="tooltip-name">' + displayName + '</div>'
               + '<div class="tooltip-desc">' + data.desc + '</div>';
             tooltip.style.display = 'block';
-            // Position above the element
+            tooltip.style.opacity = '0';
+            // Position to the right of the element, vertically centered
             var rect = el.getBoundingClientRect();
             var tw = 220;
-            var left = rect.left + rect.width / 2 - tw / 2;
-            if (left < 8) left = 8;
-            if (left + tw > window.innerWidth - 8) left = window.innerWidth - 8 - tw;
+            var th = tooltip.offsetHeight;
+            var gap = 12;
+            var left = rect.right + gap;
+            var top = rect.top + window.scrollY + rect.height / 2 - th / 2;
+            // If it overflows the right edge, show on the left
+            if (left + tw > window.innerWidth - 8) {
+              left = rect.left - tw - gap;
+            }
+            // Clamp vertical position
+            if (top < window.scrollY + 8) top = window.scrollY + 8;
             tooltip.style.left = left + 'px';
-            tooltip.style.top = (rect.top + window.scrollY - tooltip.offsetHeight - 10) + 'px';
+            tooltip.style.top = top + 'px';
             tooltip.style.opacity = '1';
           }
 
