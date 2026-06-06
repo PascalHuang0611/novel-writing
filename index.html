@@ -10,7 +10,7 @@
   <meta http-equiv="Expires" content="0">
   <script>
     (function() {
-      var SITE_VERSION = '0.1.2';
+      var SITE_VERSION = '0.2.0';
       var stored = localStorage.getItem('site_version');
       if (stored && stored !== SITE_VERSION) {
         localStorage.setItem('site_version', SITE_VERSION);
@@ -398,6 +398,80 @@
       background: var(--text-muted);
     }
 
+    /* ===== CHARACTER TOOLTIP ===== */
+    .char-ref {
+      color: var(--accent) !important;
+      cursor: pointer;
+      border-bottom: 1px dotted rgba(88, 166, 255, 0.4);
+      position: relative;
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .char-ref:hover {
+      color: var(--accent-warm) !important;
+      border-bottom-color: var(--accent-warm);
+    }
+
+    .char-tooltip {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 220px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      overflow: hidden;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .char-ref:hover .char-tooltip {
+      display: block;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .char-tooltip img {
+      width: 100% !important;
+      aspect-ratio: 3/4 !important;
+      object-fit: cover !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      margin: 0 !important;
+      display: block !important;
+    }
+
+    .char-tooltip .tooltip-name {
+      font-family: var(--base-font-family);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      padding: 8px 12px 2px;
+    }
+
+    .char-tooltip .tooltip-desc {
+      font-family: var(--ui-font-family);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      padding: 2px 12px 10px;
+      line-height: 1.4;
+    }
+
+    .char-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--border-color);
+    }
+
     /* ===== RESPONSIVE ===== */
     @media (max-width: 768px) {
       .markdown-section {
@@ -520,12 +594,78 @@
             if (!document.getElementById('version-badge')) {
               var badge = document.createElement('div');
               badge.id = 'version-badge';
-              badge.textContent = 'v0.1.2';
+              badge.textContent = 'v0.2.0';
               badge.style.cssText = 'position:fixed;bottom:16px;right:16px;background:#161b22;color:#8b949e;border:1px solid #30363d;border-radius:6px;padding:4px 10px;font-family:Inter,sans-serif;font-size:0.75rem;z-index:99;opacity:0.7;transition:opacity 0.2s;cursor:default;';
               badge.onmouseenter = function() { this.style.opacity = '1'; };
               badge.onmouseleave = function() { this.style.opacity = '0.7'; };
               document.body.appendChild(badge);
             }
+          });
+        },
+        // Character Tooltip Plugin
+        function(hook) {
+          var CHARACTER_DB = {
+            '林語晴': { img: '02_Characters/images/林語晴.png', desc: '16歲，傻白甜主角。怕熱體質、F罩杯、對自身性感零自覺', link: '#/02_Characters/林語晴' },
+            '語晴':   { alias: '林語晴' },
+            '許芷涵': { img: '02_Characters/images/許芷涵.png', desc: '語晴的摯友。嗓門大、走馬路外側、護短到底', link: '#/02_Characters/許芷涵' },
+            '芷涵':   { alias: '許芷涵' },
+            '蕭亦晴': { img: '02_Characters/images/蕭亦晴.png', desc: '冷漠獨行者。丹鳳眼、黑長直、不說話但會偷吃鳳梨酥', link: '#/02_Characters/蕭亦晴' },
+            '亦晴':   { alias: '蕭亦晴' },
+            '陳柏翰': { img: '02_Characters/images/陳柏翰.png', desc: '沉默寡言的男生。短寸頭、手掌粗糙、暗戀語晴', link: '#/02_Characters/陳柏翰' },
+            '柏翰':   { alias: '陳柏翰' },
+            '方語彤': { img: '02_Characters/images/方語彤.png', desc: '短捲髮、琥珀色杏眼。記得每個人的名字、帶鳳梨酥', link: '#/02_Characters/方語彤' },
+            '語彤':   { alias: '方語彤' },
+            '張雅婷': { img: '02_Characters/images/張雅婷.png', desc: '高馬尾、排球社。嗓門大、大剌剌、全場最吵', link: '#/02_Characters/張雅婷' },
+            '雅婷':   { alias: '張雅婷' },
+            '劉彥廷': { img: '02_Characters/images/劉彥廷.png', desc: '高二天文社社長。銀框眼鏡、完美微笑、過度積極', link: '#/02_Characters/劉彥廷' },
+            '彥廷':   { alias: '劉彥廷' },
+            '周心妍': { img: '02_Characters/images/周心妍.png', desc: '低馬尾、不太起眼。沉默的觀察者——記住了一切', link: '#/02_Characters/周心妍' },
+            '心妍':   { alias: '周心妍' },
+            '葉沛妤': { img: '02_Characters/images/葉沛妤.png', desc: '低年級小女生。好瘦、抱著太重的望遠鏡', link: '#/02_Characters/葉沛妤' },
+            '沛妤':   { alias: '葉沛妤' },
+            '吳若瑜': { img: '02_Characters/images/吳若瑜.png', desc: '戴圓框眼鏡的短髮女生。流星雨時還在寫筆記', link: '#/02_Characters/吳若瑜' },
+            '若瑜':   { alias: '吳若瑜' },
+            '楊詩涵': { img: '02_Characters/images/楊詩涵.png', desc: '角色待登場', link: '#/02_Characters/楊詩涵' },
+            '白若雪': { img: '02_Characters/images/白若雪.png', desc: '角色待登場', link: '#/02_Characters/白若雪' },
+            '趙曉萍': { img: '02_Characters/images/趙曉萍.png', desc: '角色待登場', link: '#/02_Characters/趙曉萍' },
+            '鄭雅文': { img: '02_Characters/images/鄭雅文.png', desc: '角色待登場', link: '#/02_Characters/鄭雅文' },
+            '黃培昇': { img: '02_Characters/images/黃培昇.png', desc: '角色待登場', link: '#/02_Characters/黃培昇' },
+            '黃志偉': { img: '02_Characters/images/黃志偉.png', desc: '角色待登場', link: '#/02_Characters/黃志偉' }
+          };
+
+          function resolveChar(name) {
+            var entry = CHARACTER_DB[name];
+            if (!entry) return null;
+            if (entry.alias) return CHARACTER_DB[entry.alias];
+            return entry;
+          }
+
+          hook.afterEach(function(html) {
+            // Only apply to manuscript pages
+            var path = window.location.hash || '';
+            if (path.indexOf('04_Manuscript') === -1) return html;
+
+            // Build sorted names (longest first to avoid partial matches)
+            var names = Object.keys(CHARACTER_DB).sort(function(a, b) { return b.length - a.length; });
+            var pattern = new RegExp('(' + names.map(function(n) { return n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|') + ')', 'g');
+
+            // Replace in text nodes only (skip inside HTML tags and existing tooltips)
+            html = html.replace(/(<[^>]*>)|([^<]+)/g, function(match, tag, text) {
+              if (tag) return tag;
+              return text.replace(pattern, function(charName) {
+                var data = resolveChar(charName);
+                if (!data) return charName;
+                var displayName = CHARACTER_DB[charName].alias || charName;
+                return '<span class="char-ref" onclick="window.location.hash=\'' + data.link + '\'">'
+                  + charName
+                  + '<span class="char-tooltip">'
+                  + '<img src="' + data.img + '" alt="' + displayName + '">'
+                  + '<div class="tooltip-name">' + displayName + '</div>'
+                  + '<div class="tooltip-desc">' + data.desc + '</div>'
+                  + '</span></span>';
+              });
+            });
+            return html;
           });
         }
       ]
