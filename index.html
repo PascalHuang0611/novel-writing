@@ -449,6 +449,39 @@
       transition: opacity 0.3s ease;
       pointer-events: none;
     }
+    /* ===== BACK TO TOP BUTTON ===== */
+    #back-to-top {
+      position: fixed;
+      bottom: 48px;
+      right: 16px;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--bg-card, #1c2129);
+      border: 1px solid var(--border-color, #30363d);
+      color: var(--text-muted, #6e7681);
+      font-size: 1rem;
+      cursor: pointer;
+      z-index: 99;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--ui-font-family);
+    }
+    #back-to-top.visible {
+      opacity: 0.7;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    #back-to-top:hover {
+      opacity: 1;
+      background: var(--bg-secondary, #161b22);
+      color: var(--text-primary, #e6edf3);
+    }
 
     /* ===== CHARACTER TOOLTIP ===== */
     .char-ref {
@@ -722,6 +755,28 @@
               (document.querySelector('.content') || window).addEventListener('scroll', updateProgress, { passive: true });
               window.addEventListener('scroll', updateProgress, { passive: true });
               setTimeout(updateProgress, 300);
+            }
+
+            // Back to Top Button
+            if (!document.getElementById('back-to-top')) {
+              var btn = document.createElement('button');
+              btn.id = 'back-to-top';
+              btn.textContent = '↑';
+              btn.title = '回到頂部';
+              btn.onclick = function() {
+                var scrollEl = document.querySelector('.content');
+                if (scrollEl) { scrollEl.scrollTo({ top: 0, behavior: 'smooth' }); }
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              };
+              document.body.appendChild(btn);
+
+              function updateBackToTop() {
+                var scrollEl = document.querySelector('.content') || document.documentElement;
+                var scrollTop = scrollEl.scrollTop || window.pageYOffset || 0;
+                btn.classList.toggle('visible', scrollTop > 300);
+              }
+              (document.querySelector('.content') || window).addEventListener('scroll', updateBackToTop, { passive: true });
+              window.addEventListener('scroll', updateBackToTop, { passive: true });
             }
           });
         },
