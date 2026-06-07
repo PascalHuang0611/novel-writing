@@ -10,7 +10,7 @@
   <meta http-equiv="Expires" content="0">
   <script>
     (function() {
-      var SITE_VERSION = '0.2.2';
+      var SITE_VERSION = '0.3.0';
       var stored = localStorage.getItem('site_version');
       if (stored && stored !== SITE_VERSION) {
         localStorage.setItem('site_version', SITE_VERSION);
@@ -307,11 +307,27 @@
       border: 1px solid var(--border-color) !important;
     }
 
-    /* ===== HORIZONTAL RULES ===== */
+    /* ===== HORIZONTAL RULES (POV Switch) ===== */
     .markdown-section hr {
       border: none !important;
-      border-top: 1px solid var(--border-color) !important;
-      margin: 2.5rem 0 !important;
+      margin: 3rem auto !important;
+      max-width: 280px !important;
+      height: 1px !important;
+      background: linear-gradient(90deg, transparent, var(--border-color), transparent) !important;
+      position: relative !important;
+      overflow: visible !important;
+    }
+    .markdown-section hr::before {
+      content: '◆' !important;
+      position: absolute !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      background: var(--bg-color, #0d1117) !important;
+      color: var(--accent-warm, #f0883e) !important;
+      padding: 0 12px !important;
+      font-size: 0.75rem !important;
+      letter-spacing: 6px !important;
     }
 
     /* ===== SEARCH ===== */
@@ -384,6 +400,10 @@
     }
 
     /* ===== SCROLLBAR ===== */
+    body, .content, .markdown-section, .sidebar {
+      scrollbar-width: auto !important; /* Firefox */
+      scrollbar-color: var(--border-color) var(--bg-color) !important;
+    }
     ::-webkit-scrollbar {
       width: 8px;
     }
@@ -396,6 +416,38 @@
     }
     ::-webkit-scrollbar-thumb:hover {
       background: var(--text-muted);
+    }
+
+    /* ===== READING PROGRESS BAR ===== */
+    #reading-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent, #58a6ff), var(--accent-warm, #f0883e));
+      z-index: 99999;
+      transition: width 0.1s ease-out;
+      pointer-events: none;
+      box-shadow: 0 0 8px rgba(88, 166, 255, 0.4);
+    }
+
+    /* ===== READING PROGRESS PERCENTAGE ===== */
+    #reading-pct {
+      position: fixed;
+      top: 6px;
+      right: 60px;
+      background: var(--bg-card, #1c2129);
+      color: var(--text-muted, #6e7681);
+      border: 1px solid var(--border-color, #30363d);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-family: var(--ui-font-family);
+      font-size: 0.7rem;
+      z-index: 99999;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
     }
 
     /* ===== CHARACTER TOOLTIP ===== */
@@ -637,11 +689,39 @@
             if (!document.getElementById('version-badge')) {
               var badge = document.createElement('div');
               badge.id = 'version-badge';
-              badge.textContent = 'v0.2.2';
+              badge.textContent = 'v0.3.0';
               badge.style.cssText = 'position:fixed;bottom:16px;right:16px;background:#161b22;color:#8b949e;border:1px solid #30363d;border-radius:6px;padding:4px 10px;font-family:Inter,sans-serif;font-size:0.75rem;z-index:99;opacity:0.7;transition:opacity 0.2s;cursor:default;';
               badge.onmouseenter = function() { this.style.opacity = '1'; };
               badge.onmouseleave = function() { this.style.opacity = '0.7'; };
               document.body.appendChild(badge);
+            }
+
+            // Reading Progress Bar
+            if (!document.getElementById('reading-progress')) {
+              var bar = document.createElement('div');
+              bar.id = 'reading-progress';
+              document.body.appendChild(bar);
+              var pct = document.createElement('div');
+              pct.id = 'reading-pct';
+              document.body.appendChild(pct);
+
+              var scrollTarget = document.querySelector('.content') || window;
+              var hideTimer;
+              function updateProgress() {
+                var scrollEl = document.querySelector('.content') || document.documentElement;
+                var scrollTop = scrollEl.scrollTop || window.pageYOffset || 0;
+                var scrollHeight = scrollEl.scrollHeight - scrollEl.clientHeight;
+                if (scrollHeight <= 0) { bar.style.width = '0%'; return; }
+                var progress = Math.min(100, Math.max(0, (scrollTop / scrollHeight) * 100));
+                bar.style.width = progress.toFixed(1) + '%';
+                pct.textContent = Math.round(progress) + '%';
+                pct.style.opacity = '1';
+                clearTimeout(hideTimer);
+                hideTimer = setTimeout(function() { pct.style.opacity = '0'; }, 1500);
+              }
+              (document.querySelector('.content') || window).addEventListener('scroll', updateProgress, { passive: true });
+              window.addEventListener('scroll', updateProgress, { passive: true });
+              setTimeout(updateProgress, 300);
             }
           });
         },
