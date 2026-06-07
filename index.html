@@ -448,6 +448,54 @@
       opacity: 0;
       transition: opacity 0.3s ease;
       pointer-events: none;
+      cursor: pointer;
+    }
+    #reading-pct.active {
+      opacity: 0.8;
+      pointer-events: auto;
+    }
+    #reading-pct:hover {
+      opacity: 1 !important;
+      color: var(--accent, #58a6ff);
+      border-color: var(--accent, #58a6ff);
+    }
+    #reading-pct input {
+      background: transparent;
+      border: none;
+      color: var(--text-primary, #e6edf3);
+      font-family: var(--ui-font-family);
+      font-size: 0.7rem;
+      width: 32px;
+      text-align: center;
+      outline: none;
+    }
+    #reading-resume {
+      position: fixed;
+      top: 14px;
+      right: 60px;
+      background: var(--bg-card, #1c2129);
+      color: var(--text-muted, #6e7681);
+      border: 1px solid var(--accent, #58a6ff);
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-family: var(--ui-font-family);
+      font-size: 0.78rem;
+      z-index: 99999;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      pointer-events: none;
+      box-shadow: 0 4px 16px rgba(88, 166, 255, 0.2);
+    }
+    #reading-resume.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    #reading-resume:hover {
+      background: var(--accent, #58a6ff);
+      color: var(--bg-color, #0d1117);
     }
     /* ===== BACK TO TOP BUTTON ===== */
     #back-to-top {
@@ -729,7 +777,7 @@
               document.body.appendChild(badge);
             }
 
-            // Reading Progress Bar
+            // Reading Progress Bar + Bookmark System
             if (!document.getElementById('reading-progress')) {
               var bar = document.createElement('div');
               bar.id = 'reading-progress';
@@ -738,23 +786,99 @@
               pct.id = 'reading-pct';
               document.body.appendChild(pct);
 
-              var scrollTarget = document.querySelector('.content') || window;
-              var hideTimer;
-              function updateProgress() {
+              var isManuscript = (window.location.hash || '').indexOf('04_Manuscript') !== -1;
+              var pageKey = 'reading_pos_' + (window.location.hash || '/').replace(/[^a-zA-Z0-9_]/g, '_');
+              var saveTimer;
+              var isEditing = false;
+
+              function getScrollInfo() {
                 var scrollEl = document.querySelector('.content') || document.documentElement;
                 var scrollTop = scrollEl.scrollTop || window.pageYOffset || 0;
                 var scrollHeight = scrollEl.scrollHeight - scrollEl.clientHeight;
-                if (scrollHeight <= 0) { bar.style.width = '0%'; return; }
-                var progress = Math.min(100, Math.max(0, (scrollTop / scrollHeight) * 100));
+                return { el: scrollEl, top: scrollTop, max: scrollHeight };
+              }
+
+              function scrollToPercent(percent) {
+                var info = getScrollInfo();
+                var target = (percent / 100) * info.max;
+                if (info.el.scrollTo) { info.el.scrollTo({ top: target, behavior: 'smooth' }); }
+                window.scrollTo({ top: target, behavior: 'smooth' });
+              }
+
+              function updateProgress() {
+                if (isEditing) return;
+                var info = getScrollInfo();
+                if (info.max <= 0) { bar.style.width = '0%'; return; }
+                var progress = Math.min(100, Math.max(0, (info.top / info.max) * 100));
                 bar.style.width = progress.toFixed(1) + '%';
                 pct.textContent = Math.round(progress) + '%';
-                pct.style.opacity = '1';
-                clearTimeout(hideTimer);
-                hideTimer = setTimeout(function() { pct.style.opacity = '0'; }, 1500);
+                if (isManuscript) {
+                  pct.classList.add('active');
+                  // Auto-save position
+                  clearTimeout(saveTimer);
+                  saveTimer = setTimeout(function() {
+                    localStorage.setItem(pageKey, Math.round(progress));
+                  }, 500);
+                } else {
+                  pct.classList.add('active');
+                  clearTimeout(saveTimer);
+                  saveTimer = setTimeout(function() { pct.classList.remove('active'); }, 1500);
+                }
               }
+
+              // Click to enter edit mode
+              pct.onclick = function() {
+                if (!pct.classList.contains('active')) return;
+                isEditing = true;
+                var current = pct.textContent.replace('%', '');
+                pct.innerHTML = '<input type="text" value="' + current + '" maxlength="3" placeholder="%">%';
+                var input = pct.querySelector('input');
+                input.focus();
+                input.select();
+                input.onkeydown = function(e) {
+                  if (e.key === 'Enter') {
+                    var val = parseInt(input.value);
+                    if (!isNaN(val) && val >= 0 && val <= 100) {
+                      scrollToPercent(val);
+                    }
+                    isEditing = false;
+                    updateProgress();
+                  } else if (e.key === 'Escape') {
+                    isEditing = false;
+                    updateProgress();
+                  }
+                };
+                input.onblur = function() {
+                  isEditing = false;
+                  updateProgress();
+                };
+              };
+
               (document.querySelector('.content') || window).addEventListener('scroll', updateProgress, { passive: true });
               window.addEventListener('scroll', updateProgress, { passive: true });
               setTimeout(updateProgress, 300);
+
+              // Restore saved position (manuscript pages only)
+              if (isManuscript) {
+                var saved = localStorage.getItem(pageKey);
+                if (saved && parseInt(saved) > 5) {
+                  var resumeBtn = document.createElement('div');
+                  resumeBtn.id = 'reading-resume';
+                  resumeBtn.textContent = '📖 繼續上次 ' + saved + '%';
+                  document.body.appendChild(resumeBtn);
+                  setTimeout(function() { resumeBtn.classList.add('show'); }, 500);
+                  resumeBtn.onclick = function() {
+                    scrollToPercent(parseInt(saved));
+                    resumeBtn.classList.remove('show');
+                    setTimeout(function() { resumeBtn.remove(); }, 400);
+                  };
+                  // Auto-hide after 6 seconds
+                  setTimeout(function() {
+                    resumeBtn.classList.remove('show');
+                    setTimeout(function() { resumeBtn.remove(); }, 400);
+                  }, 6000);
+                }
+              }
             }
 
             // Back to Top Button
